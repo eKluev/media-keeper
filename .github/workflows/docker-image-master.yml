@@ -12,8 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USER }}/media_keeper:latest
+        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USER }}/media_keeper:stable
       - name: Login in DockerHub
         run: docker login -u ${{ secrets.DOCKER_USER }} --password ${{ secrets.DOCKER_PASS }}
       - name: Pushing docker image
-        run: docker push ${{ secrets.DOCKER_USER }}/media_keeper:latest
+        run: docker push ${{ secrets.DOCKER_USER }}/media_keeper:stable

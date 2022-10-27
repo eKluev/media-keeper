@@ -1,13 +1,14 @@
 import base64
 import bugsnag
 import re
-
+import os
+import logging
 from pydantic import BaseModel, constr, Field, validator
 from app.v2.utils import s3
 
 
 class Upload(BaseModel):
-    path: constr(max_length=50) = Field(example='project/owner_id')
+    path: constr(max_length=128) = Field(example='project/owner_id')
     object_name: constr(max_length=64) = Field(example='event_34675')
     object_type: constr(max_length=5) = Field(example='jpg')
     base64_data: str
@@ -29,5 +30,8 @@ class Upload(BaseModel):
             return s3.Client().put_object(media, path)
 
         except Exception as e:
-            bugsnag.notify(e)
+            if os.environ.get('BUGSNAG'):
+                bugsnag.notify(e)
+            else:
+                logging.exception(e)
             raise SystemError('FileHasNotUploaded')

@@ -1,5 +1,7 @@
-from pydantic import BaseModel, HttpUrl, Field
 import bugsnag
+import logging
+import os
+from pydantic import BaseModel, HttpUrl, Field
 from app.v2.utils import s3
 
 
@@ -10,5 +12,8 @@ class Delete(BaseModel):
         try:
             return s3.Client().delete_object(self.url)
         except Exception as e:
-            bugsnag.notify(e)
+            if os.environ.get('BUGSNAG'):
+                bugsnag.notify(e)
+            else:
+                logging.exception(e)
             raise SystemError('FileWasNotDeleted')
